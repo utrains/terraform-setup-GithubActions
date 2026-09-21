@@ -1,0 +1,15 @@
+# Terraform working directory and state (state contains the SSH private key)
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Variable values (JFrog credentials and token)
+terraform.tfvars
+*.auto.tfvars
+
+# Generated secrets
+server_key.pem
+*.pem
+vaultkey.txt
+*.txt
