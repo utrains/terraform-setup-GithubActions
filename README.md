@@ -14,12 +14,12 @@ Terraform project that builds a single EC2 server on AWS and installs a small se
 - A VPC (`10.0.0.0/16`) with one public subnet, an internet gateway and a route table
 - A security group opening ports 22, 80, 4954, 8081, 8082, 9000 and 8200 to `0.0.0.0/0`
 - An RSA key pair, saved locally as `server_key.pem`
-- One Amazon Linux 2 EC2 instance (`t2.large`, 50 GB disk), no IAM role attached
+- One Amazon Linux 2023 EC2 instance (`t2.large`, 50 GB disk), no IAM role attached
 
 ## How it runs
 
 1. The instance boots and `installations_scripts/` is copied to `/home/ec2-user/`.
-2. `prepare_server` runs `yum update`, installs `dos2unix` and fixes the scripts' line endings.
+2. `prepare_server` runs `yum update`, installs `dos2unix`, fixes the scripts' line endings, and installs Docker (needed by the SonarQube step below).
 3. The install scripts run in this order:
    - `install_java.sh`
    - `install_jfrog.sh`
@@ -120,10 +120,8 @@ If SonarCloud's setup page shows different commands or a different host URL, fol
 
 ## Known issues and warnings
 
-- **SonarQube needs Docker, which this project no longer installs.** `install_sonar_using_docker.sh` will fail, and because the scripts run in sequence, Vault will not be installed. Either install Docker again or remove the SonarQube step from `main.tf`.
-- **`terraform.tfvars` contains the JFrog password and token in plain text.** Do not commit it to a public repository.
+- **`terraform.tfvars` contains the JFrog password and token in plain text.** Do not commit it to a public repository. Use `terraform.tfvars.example` as a template.
 - **The generated files hold secrets**: `server_key.pem` (SSH private key) and `vaultkey.txt` (Vault root token). The Terraform state also contains the private key. Keep all of them out of version control.
 - **Every port is open to the whole internet**, and Vault runs without TLS. Restrict the security group to your own IP for anything beyond a short-lived lab.
 - **Change the default logins** (SonarQube `admin / admin`, JFrog `admin / password`) after first login.
-- The AMI filter and the scripts assume **Amazon Linux 2**, not Amazon Linux 2023.
 - The security group still opens port 4954, which nothing uses now.
