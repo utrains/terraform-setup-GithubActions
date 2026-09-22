@@ -183,10 +183,11 @@ resource "aws_instance" "main-server" {
   }
 }
 
-# This Null Resource installs dos2unix and normalizes the scripts' line endings
+# This Null Resource installs dos2unix, normalizes the scripts' line endings, and installs Docker
+# (needed by install_sonar_using_docker.sh, which runs SonarQube as a container).
 resource "null_resource" "prepare_server" {
 
-  # ssh into the ec2 instance 
+  # ssh into the ec2 instance
   connection {
     type        = "ssh"
     user        = "ec2-user"
@@ -201,6 +202,9 @@ resource "null_resource" "prepare_server" {
       "sudo yum install dos2unix -y",
 
       "dos2unix /home/ec2-user/installations_scripts/*.sh",
+
+      # Install docker
+      "sh installations_scripts/install_docker.sh",
     ]
   }
   # wait the main-server end his installation
