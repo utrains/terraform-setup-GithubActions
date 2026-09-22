@@ -128,7 +128,7 @@ resource "aws_security_group" "web-sg" {
 
 
 #data for amazon linux
-data "aws_ami" "amazon_linux_2" {
+data "aws_ami" "amazon_linux_2023" {
   most_recent = true
   owners      = ["amazon"]
 
@@ -139,7 +139,7 @@ data "aws_ami" "amazon_linux_2" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm*"]
+    values = ["al2023-ami-*-x86_64"]
   }
 }
 
@@ -150,7 +150,7 @@ data "aws_ami" "amazon_linux_2" {
 # }
 #create ec2 instances
 resource "aws_instance" "main-server" {
-  ami                    = data.aws_ami.amazon_linux_2.id
+  ami                    = data.aws_ami.amazon_linux_2023.id
   instance_type          = var.aws_instance_type_server
   subnet_id              = aws_subnet.web-subnet.id
   vpc_security_group_ids = [aws_security_group.web-sg.id]
